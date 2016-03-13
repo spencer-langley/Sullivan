@@ -4,8 +4,16 @@ $(function () {
 		processKeyPress(event.which);
 	});
 
-	var k_Key = 75;
-	var d_Key = 68;
+	$(document).keyup(function (e) {
+	    processKeyUp(event.which);
+	});
+
+	var k_Key_Cap = 75;
+	var d_Key_Cap = 68;
+	var k_Key = 107;
+	var d_Key = 100;
+	var kDown = false;
+	var dDown = false;
 	
 	var k_StrokeTimes = [];
 	var d_StrokeTimes = [];
@@ -16,24 +24,37 @@ $(function () {
 	var pointKeystrokeThreshold = 50;
 	var pointTotalThreshold = 50;
 	var timerRunning = false;
-    var timerEndMilliseconds = 1200000;
+    //var timerEndMilliseconds = 1200000;
+	var timerEndMilliseconds = 60000;
 	var timeoutId = 0;
 	var startTime = 0;
 	var endTime = 0;
 	
 	function processKeyPress(keyCode) {
-		if(keyCode == k_Key) {
+	    if (keyCode == k_Key || keyCode == k_Key_Cap) {
 			return handleK();
 		}
-		if(keyCode == d_Key) {
+	    if (keyCode == d_Key || keyCode == d_Key_Cap) {
 			return handleD();
 		}
 		return;
 	};
+
+	function processKeyUp(keyCode) {
+	    if (keyCode == k_Key || keyCode == k_Key_Cap) {
+	        kDown = false;
+	    }
+	    else if (keyCode == d_Key || keyCode == d_Key_Cap) {
+	        dDown = false;
+	    }
+	}
 	
 	function handleK() {
+	    if (kDown) {
+	        return;
+	    }
+	    kDown = true;
 	    runTimer();
-
 		k_StrokeTimes.push( Date.now() );
 		
 		if(Math.floor(k_StrokeTimes.length % pointKeystrokeThreshold) == 0) {
@@ -46,7 +67,10 @@ $(function () {
 	
 	function handleD() {
 	    runTimer();
-
+	    if (dDown) {
+	        return;
+	    }
+	    dDown = true;
 		d_StrokeTimes.push(Date.now());
 		
 		if(Math.floor(d_StrokeTimes.length % pointKeystrokeThreshold) == 0) {
@@ -67,6 +91,7 @@ $(function () {
 		if(timerRunning) {
 			return;
 		}
+		console.log('Setting timer for ' + timerEndMilliseconds/1000 + ' secs');
 		timeoutId = setTimeout(endSession, timerEndMilliseconds);
 		timerRunning = true;
 		startTime = Date.now();

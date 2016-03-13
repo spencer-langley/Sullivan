@@ -47,7 +47,7 @@ namespace Sullivan.Controllers
             return View();
         }
 
-        public string EmailData(SessionData session)
+        public ActionResult EmailData(SessionData session)
         {
             var json = new JavaScriptSerializer().Serialize(session);
 
@@ -67,7 +67,7 @@ namespace Sullivan.Controllers
 
             smtpClient.Send(mailMessage);
 
-            return "Sent";
+            return Json("Sent");
         }
     }
 }

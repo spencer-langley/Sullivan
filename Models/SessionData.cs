@@ -9,19 +9,36 @@ namespace Sullivan.Models
     public class SessionData
     {
         public string SessionType { get; set; }
-        public string startTime { get; set; }
-        public string endTime { get; set; }
-        public List<string> k_StrokeTimes { get; set; }
-        public List<string> d_StrokeTimes { get; set; }
+        public long startTime { get; set; }
+        public long endTime { get; set; }
+        public string startDateTime { get; set; }
+        public string endDateTime { get; set; }
+        public List<long> k_StrokeTimes { get; set; }
+        public List<long> d_StrokeTimes { get; set; }
 
         public List<SubSessionData> SubSessions { get; set; }
+
+        public SessionData()
+        {
+            k_StrokeTimes = new List<long>();
+            d_StrokeTimes = new List<long>();
+            SubSessions = new List<SubSessionData>();
+        }
     }
 
     public class SubSessionData
     {
+        public long startTime { get; set; }
+        public long endTime { get; set; }
         public string badKeyCode { get; set; }
-        public List<string> goodTimes { get; set; }
-        public List<string> badTimes { get; set; }
-        public string percentStrokesGood { get; set; }
+        public List<long> goodTimes { get; set; }
+        public List<long> badTimes { get; set; }
+        public double percentStrokesGood { get; set; }
+
+        public SubSessionData()
+        {
+            goodTimes = new List<long>();
+            badTimes = new List<long>();
+        }
     }
 }

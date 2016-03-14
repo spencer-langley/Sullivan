@@ -28,17 +28,16 @@ $(function () {
 	var pointTotalThreshold = 50;
 	var timerRunning = false;
 	var dTimerRunning = false;
-	
-	var timerEndMilliseconds = 60000;
-	var dOnlyEndMilliseconds = 30000;
 
-	//var timerEndMilliseconds = 1200000;
-	//var dOnlyEndMilliseconds = 180000;
+	var timerEndMilliseconds = 1200000;
+	var dOnlyEndMilliseconds = 180000;
 	
 	var timeoutId = 0;
 	var dOnlyTimeoutId = 0;
 	var startTime = 0;
 	var endTime = 0;
+	var startDT;
+	var endDT;
 
 	var kDown = false;
 	var dDown = false;
@@ -112,6 +111,14 @@ $(function () {
 		timeoutId = setTimeout(endSession, timerEndMilliseconds);
 		timerRunning = true;
 		startTime = Date.now();
+		startTime = Date.now();
+		var currentdate = new Date();
+		startDT = currentdate.getDate() + "/"
+                        + (currentdate.getMonth() + 1) + "/"
+                        + currentdate.getFullYear() + " @ "
+                        + currentdate.getHours() + ":"
+                        + currentdate.getMinutes() + ":"
+                        + currentdate.getSeconds();
 	}
 	
 	function dOnlyCounter() {
@@ -128,10 +135,19 @@ $(function () {
 		clearTimeout(dOnlyTimeoutId);
 		clearTimeout(timeoutId);
 		endTime = Date.now();
+		var currentdate = new Date();
+		endDT = currentdate.getDate() + "/"
+                        + (currentdate.getMonth() + 1) + "/"
+                        + currentdate.getFullYear() + " @ "
+                        + currentdate.getHours() + ":"
+                        + currentdate.getMinutes() + ":"
+                        + currentdate.getSeconds();
 		
 		var submitData =
             {
                 "SessionType": 'Two',
+                "startDateTime": startDT,
+                "endDateTime": endDT,
                 "startTime": startTime,
                 "endTime": endTime,
                 "k_StrokeTimes": k_StrokeTimes,

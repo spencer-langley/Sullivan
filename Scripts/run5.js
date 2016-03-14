@@ -27,6 +27,8 @@ $(function () {
 	var k_StrokeTimes = [];
 	var d_StrokeTimes = [];
 	var subSessionData = [];
+	var subStart;
+	var subEnd;
 	
 	var k_Score = 0;
 	var d_Score = 0;
@@ -36,20 +38,26 @@ $(function () {
 	var timerRunning = false;
 	var dTimerRunning = false;
 	
-	var modeEndMilliseconds = 30000;
-    //var modeEndMilliseconds = 300000;
+    var modeEndMilliseconds = 300000;
 	
+	var startTime = 0;
+	var endTime = 0;
+	var startDT;
+	var endDT;
 	var ModeTimeoutId = 0;
 	
 	var currentBadKeyIndex = null;
 	
 	function EndSubSession() {
-		subSessionData.push({
-			'badKeyCode': keyArray[currentBadKeyIndex],
-			'goodTimes': goodStrokeTimes,
-			'badTimes': badStrokeTimes,
-			'percentStrokesGood': (goodStrokeTimes.length / (goodStrokeTimes.length + badStrokeTimes.length))
-		});
+	    subEnd = Date.now();
+	    subSessionData.push({
+	        'startTime': subStart,
+	        'endTime': subEnd,
+	        'badKeyCode': String.fromCharCode(keyArray[currentBadKeyIndex]),
+	        'goodTimes': goodStrokeTimes,
+	        'badTimes': badStrokeTimes,
+	        'percentStrokesGood': (goodStrokeTimes.length / (goodStrokeTimes.length + badStrokeTimes.length))
+	    });
 		console.log('SubSession data:');
 		console.log(subSessionData);
 		currentBadKeyIndex = null;
@@ -74,6 +82,7 @@ $(function () {
 	}
 	
 	function BeginSubSession(badIndex) {
+	    subStart = Date.now();
 	    currentBadKeyIndex = badIndex;
 		goodStrokeTimes = [];
 		badStrokeTimes = [];
@@ -88,7 +97,15 @@ $(function () {
 	function processKeyPress(keyCode) {
 	    if (keyCode == k_Key || keyCode == d_Key || keyCode == k_Key_Cap || keyCode == d_Key_Cap) {
 			if(currentBadKeyIndex == null) {
-				BeginSubSession(flipCoin());
+			    BeginSubSession(flipCoin());
+			    startTime = Date.now();
+			    var currentdate = new Date();
+			    startDT = currentdate.getDate() + "/"
+                                + (currentdate.getMonth() + 1) + "/"
+                                + currentdate.getFullYear() + " @ "
+                                + currentdate.getHours() + ":"
+                                + currentdate.getMinutes() + ":"
+                                + currentdate.getSeconds();
 			}
 			if (keyCode == keyArray[currentBadKeyIndex] || keyCode == keyArrayCap[currentBadKeyIndex]) {
 				handleBadKeyStroke();
@@ -156,11 +173,25 @@ $(function () {
 	}
 	
 	function endSession() {
-		$(document).off("keydown");
-		
+	    $(document).off("keydown");
+	    endTime = Date.now();
+		var currentdate = new Date();
+		endDT = currentdate.getDate() + "/"
+                        + (currentdate.getMonth() + 1) + "/"
+                        + currentdate.getFullYear() + " @ "
+                        + currentdate.getHours() + ":"
+                        + currentdate.getMinutes() + ":"
+                        + currentdate.getSeconds();
+
 		var submitData =
             {
                 "SessionType": 'Five',
+                "startDateTime": startDT,
+                "endDateTime": endDT,
+                "startTime": startTime,
+                "endTime": endTime,
+                "k_StrokeTimes": k_StrokeTimes,
+                "d_StrokeTimes": d_StrokeTimes,
                 "SubSessions": subSessionData
             }
 

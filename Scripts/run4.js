@@ -29,13 +29,14 @@ $(function () {
 	var pointTotalThreshold = 50;
 	var timerRunning = false;
 	
-	//var timerEndMilliseconds = 1200000;
-	var timerEndMilliseconds = 60000;
+	var timerEndMilliseconds = 1200000;
 	
 	var timeoutId = 0;
 	var startTime = 0;
 	var endTime = 0;
-	
+	var startDT;
+	var endDT;
+
 	function processKeyPress(keyCode) {
 		if(keyCode == k_Key || keyCode == k_Key_Cap) {
 			return handleK();
@@ -62,10 +63,6 @@ $(function () {
 	    kDown = true;
 		runTimer();
 		k_StrokeTimes.push(Date.now());
-	    if(Math.floor(k_StrokeTimes.length % pointKeystrokeThreshold) == 0) {
-	    	k_Score++;
-	    }
-	    $('#kScoreContainer').html( k_Score );
 	    checkScores();
 	}
 	
@@ -99,16 +96,33 @@ $(function () {
 		timeoutId = setTimeout(endSession, timerEndMilliseconds);
 		timerRunning = true;
 		startTime = Date.now();
+		startTime = Date.now();
+		var currentdate = new Date();
+		startDT = currentdate.getDate() + "/"
+                        + (currentdate.getMonth() + 1) + "/"
+                        + currentdate.getFullYear() + " @ "
+                        + currentdate.getHours() + ":"
+                        + currentdate.getMinutes() + ":"
+                        + currentdate.getSeconds();
 	}
 	
 	function endSession() {
 		$(document).off("keydown");
 		clearTimeout(timeoutId);
 		endTime = Date.now();
-		
+		var currentdate = new Date();
+		endDT = currentdate.getDate() + "/"
+                        + (currentdate.getMonth() + 1) + "/"
+                        + currentdate.getFullYear() + " @ "
+                        + currentdate.getHours() + ":"
+                        + currentdate.getMinutes() + ":"
+                        + currentdate.getSeconds();
+
 		var submitData =
             {
                 "SessionType": 'Four',
+                "startDateTime": startDT,
+                "endDateTime": endDT,
                 "startTime": startTime,
                 "endTime": endTime,
                 "k_StrokeTimes": k_StrokeTimes,

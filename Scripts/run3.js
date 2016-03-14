@@ -27,6 +27,8 @@ $(function () {
 	var k_StrokeTimes = [];
 	var d_StrokeTimes = [];
 	var subSessionData = [];
+	var subStart;
+	var subEnd;
 	
 	var k_Score = 0;
 	var d_Score = 0;
@@ -36,19 +38,22 @@ $(function () {
 	var timerRunning = false;
 	var dTimerRunning = false;
 	
-	var modeEndMilliseconds = 30000;
-    //var modeEndMilliseconds = 300000;
+    var modeEndMilliseconds = 300000;
 	
 	var ModeTimeoutId = 0;
 	var startTime = 0;
 	var endTime = 0;
+	var startDT;
+	var endDT;
 	
 	var currentBadKeyIndex = null;
 	
 	function EndSubSession() {
+	    subEnd = Date.now();
 	    subSessionData.push({
-	        'startTime': startTime,
-			'badKeyCode': keyArray[currentBadKeyIndex],
+	        'startTime': subStart,
+            'endTime': subEnd,
+            'badKeyCode': String.fromCharCode(keyArray[currentBadKeyIndex]),
 			'goodTimes': goodStrokeTimes,
 			'badTimes': badStrokeTimes,
 			'percentStrokesGood': (goodStrokeTimes.length / (goodStrokeTimes.length + badStrokeTimes.length))
@@ -76,10 +81,7 @@ $(function () {
 	}
 	
 	function BeginSubSession(badIndex) {
-	    startTime = Date.now();
-	    console.log('Previous bad index: ' + currentBadKeyIndex);
-	    console.log('New bad index: ' + badIndex);
-	    console.log('(' + currentBadKeyIndex + ' + 1) % 2 = ' + ((currentBadKeyIndex + 1) % 2) );
+	    subStart = Date.now();
 	    currentBadKeyIndex = badIndex;
 		goodStrokeTimes = [];
 		badStrokeTimes = [];
@@ -92,17 +94,28 @@ $(function () {
 	}
 	
 	function processKeyPress(keyCode) {
-		if(keyCode == k_Key || keyCode == d_Key || keyCode == d_Key_Cap || keyCode == k_Key_Cap) {
-			if(currentBadKeyIndex == null) {
-				BeginSubSession(flipCoin());
-			}
-			if (keyCode == keyArray[currentBadKeyIndex] || keyCode == keyArrayCap[currentBadKeyIndex]) {
-				handleBadKeyStroke();
-			}
-			else {
-				handleGoodKeyStroke();
-			}
-		}
+	    if (keyCode == k_Key || keyCode == d_Key || keyCode == d_Key_Cap || keyCode == k_Key_Cap) {
+	        if (currentBadKeyIndex == null) {
+	            BeginSubSession(flipCoin());
+	            startTime = Date.now();
+	            var currentdate = new Date();
+	            startDT = currentdate.getDate() + "/"
+                                + (currentdate.getMonth() + 1) + "/"
+                                + currentdate.getFullYear() + " @ "
+                                + currentdate.getHours() + ":"
+                                + currentdate.getMinutes() + ":"
+                                + currentdate.getSeconds();
+	        }
+	        if (keyCode == keyArray[currentBadKeyIndex] || keyCode == keyArrayCap[currentBadKeyIndex]) {
+	            handleBadKeyStroke(keyCode);
+	        }
+	        else {
+	            handleGoodKeyStroke(keyCode);
+	        }
+	    }
+	    else {
+	        console.log('Ignoring: ' + keyCode);
+	    }
 	}
 
 	function processKeyUp(keyCode) {
@@ -114,50 +127,52 @@ $(function () {
 	    }
 	}
 	
-	function handleGoodKeyStroke() {
+	function handleGoodKeyStroke(keyCode) {
+	    var timeMark = Date.now();
+	    if (currentBadKeyIndex == 0) {
+	        if (dDown) {
+	            console.log('Ignoring D hold');
+	            return;
+	        }
+	        dDown = true;
+	        d_StrokeTimes.push(timeMark);
+	        console.log('D strokes: ' + d_StrokeTimes.length);
+	    }
+	    else {
+	        if (kDown) {
+	            console.log('Ignoring K hold');
+	            return;
+	        }
+	        kDown = true;
+	        k_StrokeTimes.push(timeMark);
+	        console.log('K strokes: ' + k_StrokeTimes.length);
+	    }
+	    goodStrokeTimes.push(timeMark);
+	    k_Score = Math.floor(k_StrokeTimes.length / pointKeystrokeThreshold);
+	    d_Score = Math.floor(d_StrokeTimes.length / pointKeystrokeThreshold);
+		$('#kScoreContainer').html( k_Score );
+		$('#dScoreContainer').html( d_Score );
+	}
+	
+	function handleBadKeyStroke(keyCode) {
 	    var timeMark = Date.now();
 	    if (currentBadKeyIndex == 0) {
 	        if (kDown) {
+	            console.log('Ignoring K hold');
 	            return;
 	        }
 	        kDown = true;
 	        k_StrokeTimes.push(timeMark);
+	        console.log('K strokes: ' + k_StrokeTimes.length);
 	    }
 	    else {
 	        if (dDown) {
+	            console.log('Ignoring D hold');
 	            return;
 	        }
 	        dDown = true;
 	        d_StrokeTimes.push(timeMark);
-	    }
-	    goodStrokeTimes.push(timeMark);
-		if (keyArray[currentBadKeyIndex] == d_Key || keyArrayCap[currentBadKeyIndex] == d_Key_Cap) {
-		    k_StrokeTimes.push(timeMark);
-		    k_Score = Math.floor(k_StrokeTimes.length / pointKeystrokeThreshold);
-			$('#kScoreContainer').html( k_Score );
-		}
-		else {
-		    d_StrokeTimes.push(timeMark);
-		    d_Score = Math.floor(d_StrokeTimes.length / pointKeystrokeThreshold);
-			$('#dScoreContainer').html( d_Score );
-		}
-	}
-	
-	function handleBadKeyStroke() {
-	    var timeMark = Date.now();
-	    if (currentBadKeyIndex == 0) {
-	        if(kDown) {
-	            return;
-	        }
-	        kDown = true;
-	        k_StrokeTimes.push(timeMark);
-	    }
-	    else {
-	        if(dDown) {
-	            return;
-	        }
-	        dDown = true;
-	        d_StrokeTimes.push(timeMark);
+	        console.log('D strokes: ' + d_StrokeTimes.length);
 	    }
 	    badStrokeTimes.push(timeMark);
 		$('#buzzer').trigger('play');
@@ -175,9 +190,23 @@ $(function () {
 	    endTime = Date.now();
 		$(document).off("keydown");
 		
+		var currentdate = new Date();
+		endDT = currentdate.getDate() + "/"
+                        + (currentdate.getMonth() + 1) + "/"
+                        + currentdate.getFullYear() + " @ "
+                        + currentdate.getHours() + ":"
+                        + currentdate.getMinutes() + ":"
+                        + currentdate.getSeconds();
+
 		var submitData =
             {
                 "SessionType": 'Three',
+                "startDateTime": startDT,
+                "endDateTime": endDT,
+                "startTime": startTime,
+                "endTime": endTime,
+                "k_StrokeTimes": k_StrokeTimes,
+                "d_StrokeTimes": d_StrokeTimes,
                 "SubSessions": subSessionData
             }
 

@@ -1,11 +1,11 @@
 $(function () {
 
 	$(document).keydown(function (e) {
-		processKeyPress(event.which);
+		processKeyPress(e.which);
 	});
 
 	$(document).keyup(function (e) {
-	    processKeyUp(event.which);
+	    processKeyUp(e.which);
 	});
 
 	var k_Key_Cap = 75;

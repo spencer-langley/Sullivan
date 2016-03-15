@@ -1,11 +1,11 @@
 $(function () {
 
     $(document).keypress(function (e) {
-		processKeyPress(event.which);
+		processKeyPress(e.which);
     });
 
     $(document).keyup(function (e) {
-        processKeyUp(event.which);
+        processKeyUp(e.which);
     });
 	
 	$('#buzzer').bind('ended', function(){

@@ -59,7 +59,6 @@ $(function () {
 	    });
 		console.log('SubSession data:');
 		console.log(subSessionData);
-		currentBadKeyIndex = null;
 		if(subSessionData.length == 6 || LastThreeSubsKeyRatioCheck() ) {
 			endSession();
 		}

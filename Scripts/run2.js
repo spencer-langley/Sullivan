@@ -111,7 +111,6 @@ $(function () {
 		timeoutId = setTimeout(endSession, timerEndMilliseconds);
 		timerRunning = true;
 		startTime = Date.now();
-		startTime = Date.now();
 		var currentdate = new Date();
 		startDT = currentdate.getDate() + "/"
                         + (currentdate.getMonth() + 1) + "/"
@@ -127,7 +126,6 @@ $(function () {
 		}
 		dOnlyTimeoutId = setTimeout(endSession, dOnlyEndMilliseconds);
 		dTimerRunning = true;
-		startTime = Date.now();
 	}
 	
 	function endSession() {

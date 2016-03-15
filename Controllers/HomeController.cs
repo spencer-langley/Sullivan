@@ -92,7 +92,7 @@ namespace Sullivan.Controllers
             {
                 for (int i = 0; i < session.SubSessions.Count; i++)
                 {
-                    markup += GetSubSessionMarkup(session.SubSessions[i], i);
+                    markup += GetSubSessionMarkup(session.SubSessions[i], i, start, end);
                 }
             }
 
@@ -125,7 +125,7 @@ namespace Sullivan.Controllers
             return markup;
         }
 
-        private string GetSubSessionMarkup(SubSessionData subSession, int index)
+        private string GetSubSessionMarkup(SubSessionData subSession, int index, long sessionStart, long sessionEnd)
         {
             string markup = string.Empty;
 
@@ -142,7 +142,7 @@ namespace Sullivan.Controllers
             double badRate = (subSession.badTimes.Count * 60000) / ((double)duration);
 
             markup += ("Sub-Session[" + (index + 1).ToString() + "] Bad Key: '" + subSession.badKeyCode + "' " + subSession.percentStrokesGood*100 + "% good <br />");
-            markup += ("Start : " + start.ToString() + " End: " + end.ToString() + "<br />");
+            markup += ("Start : " + (start - sessionStart).ToString() + " End: " + (end - sessionStart).ToString() + " (ms after session start)<br />");
             markup += ("Total good-rate / min: " + goodRate.ToString() + "<br />");
             markup += ("Total bad-rate / min: " + badRate.ToString() + "<br /><br />");
 
